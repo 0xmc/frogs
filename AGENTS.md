@@ -1,9 +1,9 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# frogs
 
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+- A Go HTTP server (`main.go`, `frogs.go`) with its page embedded from
+  `static/`. No dependencies beyond the standard library.
+- It runs on Datum Compute's `unikernel` runtime class. Keep the binary static
+  (`CGO_ENABLED=0`, no `-buildmode=pie`): `datumctl compute build --analyze`
+  rejects Go's PIE build because it asks for a dynamic loader.
+- Run `gofmt -l .`, `go vet ./...`, and `go test -race ./...` before
+  committing.

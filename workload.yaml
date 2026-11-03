@@ -1,0 +1,147 @@
+# Managed by datumctl compute deploy. Commit this file to manage your workload declaratively.
+# Apply changes with: datumctl compute deploy -f workload.yaml
+apiVersion: compute.datumapis.com/v1alpha
+kind: Workload
+metadata:
+  creationTimestamp: "2026-11-03T01:26:01Z"
+  finalizers:
+  - compute.datumapis.com/workload-controller
+  generation: 4
+  managedFields:
+  - apiVersion: compute.datumapis.com/v1alpha
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:finalizers:
+          .: {}
+          v:"compute.datumapis.com/workload-controller": {}
+    manager: manager
+    operation: Update
+    time: "2026-11-03T01:26:01Z"
+  - apiVersion: compute.datumapis.com/v1alpha
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:status:
+        .: {}
+        f:conditions: {}
+        f:currentReplicas: {}
+        f:deployments: {}
+        f:desiredReplicas: {}
+        f:observedGeneration: {}
+        f:placements: {}
+        f:readyReplicas: {}
+        f:replicas: {}
+        f:updatedReplicas: {}
+    manager: manager
+    operation: Update
+    subresource: status
+    time: "2026-11-03T01:32:59Z"
+  - apiVersion: compute.datumapis.com/v1alpha
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        .: {}
+        f:placements: {}
+        f:template:
+          .: {}
+          f:metadata: {}
+          f:spec:
+            .: {}
+            f:networkInterfaces:
+              .: {}
+              k:{"name":"eth0"}:
+                .: {}
+                f:ipFamilies: {}
+                f:name: {}
+                f:network:
+                  .: {}
+                  f:name: {}
+                f:reclaimPolicy: {}
+            f:runtime:
+              .: {}
+              f:class: {}
+              f:resources:
+                .: {}
+                f:instanceType: {}
+              f:sandbox:
+                .: {}
+                f:containers:
+                  .: {}
+                  k:{"name":"app"}:
+                    .: {}
+                    f:image: {}
+                    f:name: {}
+                    f:ports:
+                      .: {}
+                      k:{"name":"http"}:
+                        .: {}
+                        f:name: {}
+                        f:port: {}
+                        f:protocol: {}
+    manager: compute
+    operation: Update
+    time: "2026-11-03T01:34:22Z"
+  name: frogs
+  namespace: default
+  resourceVersion: "721806092"
+  uid: 2f13471a-f718-4e9d-b7e6-12b64a321c75
+spec:
+  placements:
+  - locations:
+    - name: us-east-1
+    name: default
+    scaleSettings:
+      instanceManagementPolicy: OrderedReady
+      minReplicas: 1
+  template:
+    metadata: {}
+    spec:
+      networkInterfaces:
+      - ipFamilies:
+        - IPv6
+        name: eth0
+        network:
+          name: default
+        reclaimPolicy: Delete
+      runtime:
+        class: unikernel
+        resources:
+          instanceType: datumcloud-d1-standard-2
+        sandbox:
+          containers:
+          - image: ghcr.io/0xmc/frogs@sha256:7c1b04aad7368e2459c58dd66e19be570ec4da547bfd04b9cc0bb978b4b80c57
+            name: app
+            ports:
+            - name: http
+              port: 8080
+              protocol: TCP
+status:
+  conditions:
+  - lastTransitionTime: "2026-11-03T01:32:59Z"
+    message: At least one available placement was found
+    observedGeneration: 3
+    reason: AvailablePlacementFound
+    status: "True"
+    type: Available
+  currentReplicas: 1
+  deployments: 1
+  desiredReplicas: 1
+  observedGeneration: 3
+  placements:
+  - conditions:
+    - lastTransitionTime: "2026-11-03T01:32:59Z"
+      message: At least one available deployment was found
+      reason: AvailableDeploymentFound
+      status: "True"
+      type: Available
+    currentReplicas: 1
+    desiredReplicas: 1
+    locations:
+    - name: us-east-1
+    name: default
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

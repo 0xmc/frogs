@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>frogs</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #171717; --muted: rgba(0,0,0,.6);
+    --frame: rgba(0,0,0,.05); --border: rgba(0,0,0,.2);
+    --green: #16a34a; --err-bg: #fef2f2; --err-fg: #991b1b; --err-border: #fca5a5;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0a0a; --fg: #ededed; --muted: rgba(255,255,255,.6);
+      --frame: rgba(255,255,255,.1); --border: rgba(255,255,255,.2);
+      --err-bg: #2a0f0f; --err-fg: #fca5a5; --err-border: #7f1d1d;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1.5rem; padding: 1.5rem 1rem; text-align: center;
+  }
+  h1 { margin: 0; font-size: 1.875rem; }
+  .frame {
+    width: 100%; max-width: 28rem; aspect-ratio: 1; border-radius: .75rem;
+    background: var(--frame); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .frame img { width: 100%; height: 100%; object-fit: contain; }
+  .caption { max-width: 28rem; font-size: .875rem; color: var(--muted); line-height: 1.4; }
+  .caption a { color: inherit; }
+  .caption strong { color: var(--fg); font-size: 1rem; }
+  .buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  button {
+    border-radius: 9999px; padding: .75rem 1.5rem; font-size: 1.125rem; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+  }
+  button:disabled { opacity: .5; cursor: default; }
+  #not-cute { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+  #cute { background: var(--green); color: #fff; border: 0; }
+  #error {
+    max-width: 28rem; width: 100%; padding: .75rem 1rem; border-radius: .5rem;
+    background: var(--err-bg); color: var(--err-fg); border: 1px solid var(--err-border);
+    margin: 0; font-weight: 600; overflow-wrap: anywhere;
+  }
+</style>
+</head>
+<body>
+  <h1>man i love frogs</h1>
+
+  <div class="frame"><img id="photo" alt=""></div>
+  <p class="caption" id="caption">finding a frog…</p>
+
+  <div class="buttons">
+    <button id="not-cute" type="button">👎 not cute</button>
+    <button id="cute" type="button">🐸 cute</button>
+  </div>
+
+  <p id="error" role="alert" hidden></p>
+
+<script>
+  const photo = document.getElementById("photo");
+  const caption = document.getElementById("caption");
+  const errorBox = document.getElementById("error");
+  const notCute = document.getElementById("not-cute");
+  const cute = document.getElementById("cute");
+
+  let frogs = [];
+  let index = 0;
+
+  function show(i) {
+    const frog = frogs[i];
+    photo.src = frog.imageUrl;
+    photo.alt = frog.name;
+    caption.replaceChildren();
+    const name = document.createElement("strong");
+    name.textContent = frog.name;
+    const species = document.createElement("em");
+    species.textContent = frog.species;
+    const credit = document.createElement("a");
+    credit.href = frog.source;
+    credit.target = "_blank";
+    credit.rel = "noreferrer";
+    credit.textContent = "Photo: " + frog.credit;
+    caption.append(name, document.createElement("br"), species, " · ", credit);
+  }
+
+  function showError(err) {
+    errorBox.textContent = String(err);
+    errorBox.hidden = false;
+  }
+
+  // Anything thrown and not caught ends up on screen, not only in the console.
+  window.addEventListener("error", (e) => showError(e.error || e.message));
+  window.addEventListener("unhandledrejection", (e) => showError(e.reason));
+
+  cute.addEventListener("click", () => {
+    errorBox.hidden = true;
+    index = (index + 1) % frogs.length;
+    show(index);
+  });
+
+  // Calling a frog not cute is an error. The server says so, and we throw.
+  notCute.addEventListener("click", async () => {
+    notCute.disabled = true;
+    try {
+      const res = await fetch("/api/not-cute", { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(body.error || `not-cute failed with HTTP ${res.status}`);
+      }
+    } finally {
+      notCute.disabled = false;
+    }
+  });
+
+  (async () => {
+    const res = await fetch("/api/frogs");
+    if (!res.ok) throw new Error(`could not load frogs: HTTP ${res.status}`);
+    frogs = await res.json();
+    index = Math.floor(Math.random() * frogs.length);
+    show(index);
+  })();
+</script>
+</body>
+</html>
